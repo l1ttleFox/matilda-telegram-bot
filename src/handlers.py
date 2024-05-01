@@ -101,7 +101,7 @@ async def confirm_order(callback: CallbackQuery, state: FSMContext) -> None:
     data["price"] = 800 if data["mark"] == "4" else 1200
     if data["rate"] == "immediately":
         data["price"] = data["price"] * 1.4
-    await bot.send_message(chat_id=WORKERS_GROUP_ID, text=text.new_order.format(
+    message_id = await bot.send_message(chat_id=WORKERS_GROUP_ID, text=text.new_order.format(
         rate="\n🚨🚨🚨СРОЧНО‼️" if data["rate"] == "immediately" else "",
         username=data["username"],
         title=data["title"],
@@ -111,4 +111,5 @@ async def confirm_order(callback: CallbackQuery, state: FSMContext) -> None:
         time=datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S"),
         comment=data["comment"],
     ))
+    await bot.pin_chat_message(chat_id=WORKERS_GROUP_ID, message_id=message_id)
     await callback.message.edit_text(text.order_confirmed, reply_markup=None)
