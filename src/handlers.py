@@ -16,6 +16,13 @@ from states import MakingOrder
 
 router = Router()
     
+
+@logger.catch()
+@router.message(Command("test"))
+async def start_command_handler(message: Message):
+    logger.info(f"New order from user @{message.from_user.username}")
+    await message.answer("OK")
+    
     
 @logger.catch()
 @router.message(Command("order"))
