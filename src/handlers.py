@@ -110,6 +110,6 @@ async def confirm_order(callback: CallbackQuery, state: FSMContext) -> None:
         time=datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S"),
         comment=data["comment"],
     ))
-    await bot.send_message(chat_id=WORKERS_GROUP_ID, text=f"message id: {message_id}")
+    await bot.send_message(chat_id=WORKERS_GROUP_ID, text=f"message id: {message_id['message_id']}")
     await bot.pin_chat_message(chat_id=WORKERS_GROUP_ID, message_id=message_id)
     await callback.message.edit_text(text.order_confirmed, reply_markup=None)
