@@ -11,6 +11,7 @@ import keyboard as kb
 import text
 from config import WORKERS_GROUP_ID
 from states import MakingOrder
+from db import session, Order
 
 
 router = Router()
@@ -95,11 +96,11 @@ async def get_user_email(message: Message, state: FSMContext) -> None:
 @logger.catch()
 @router.callback_query(F.data == "confirmed")
 async def confirm_order(callback: CallbackQuery, state: FSMContext) -> None:
-    
     data = await state.get_data()
     data["price"] = 800 if data["mark"] == "4" else 1200
     if data["rate"] == "immediately":
         data["price"] = data["price"] * 1.4
+    dt = datetime.datetime.now() + datetime.timedelta(hours=3)
     message = await bot.send_message(chat_id=WORKERS_GROUP_ID, text=text.new_order.format(
         rate="\n🚨🚨🚨СРОЧНО‼️" if data["rate"] == "immediately" else "",
         username=data["username"],
@@ -107,8 +108,72 @@ async def confirm_order(callback: CallbackQuery, state: FSMContext) -> None:
         mark=data["mark"],
         email=data["email"],
         price=data["price"],
-        time=datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S"),
+        time=dt.strftime("%d.%m.%Y %H:%M:%S"),
         comment=data["comment"],
     ))
     await bot.pin_chat_message(chat_id=WORKERS_GROUP_ID, message_id=message.message_id)
     await callback.message.edit_text(text.order_confirmed, reply_markup=None)
+    await state.clear()
+    
+    order = Order(
+        customer_username=data["username"],
+        title=data["title"],
+        mark=int(data["mark"]),
+        immediately=True if data["rate"] == "immediately" else False,
+        price=int(data["price"]),
+        email=data["email"],
+        message_id=message.message_id,
+        comment=data["comment"]
+    )
+    session.add(order)
+    session.commit()
+
+
+@logger.catch()
+@router.message(lambda m: m.chat.id == WORKERS_GROUP_ID and m.text == "ГОТОВО")
+async def order_done(message: Message):
+    if message.reply_to_message:
+        if message.reply_to_message.message_id in session.query(Order.message_id).filter(Order.released is False).all():
+            bot.unpin_chat_message(WORKERS_GROUP_ID, message.reply_to_message.message_id)
+            order = session.query(Order).filter(Order.message_id == message.reply_to_message.message_id).one()
+            order.released = True
+            order.release_date = datetime.datetime.now()
+            session.commit()
+            
+            await message.answer("Отлично! Отметил заказ выполненным. Можете переходить к следующим.")
+            
+            
+@logger.catch()
+@router.message(Command("orders"))
+async def show_all_orders(message: Message) -> None:
+    if message.chat.id == WORKERS_GROUP_ID:
+        result = ""
+        for i_order in session.query(Order).all():
+            result += f"заказ #{i_order.id} \t| {'выполнен' if i_order.released else 'в процессе'}\t| на {i_order.mark}\t| {'срочно' if i_order.immediately else 'не срочно'} {i_order.customer_username}\n"
+            
+        await message.answer(result)
+        
+        
+@logger.catch()
+@router.message(lambda m: m.text.startswith("/order "))
+async def show_detail_order(message: Message):
+    try:
+        order_id = int(message.text.split()[1])
+        order = session.query(Order).filter(Order.id == order_id).one()
+        result = text.show_detail_order.format(
+            id=order.id,
+            username=order.customer_username,
+            title=order.title,
+            mark=order.mark,
+            immediately="да" if order.immediately else "нет",
+            price=order.price,
+            email=order.email,
+            comment=order.comment,
+            confirma_date=order.confirm_date,
+            status="выполнен" if order.released else "в процессе",
+            released_date=order.release_date if order.released else ""
+        )
+        await message.answer(result)
+        
+    except:
+        await message.answer("Неверный формат команды. /order <order_id>")
