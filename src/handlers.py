@@ -156,6 +156,9 @@ async def show_all_orders(message: Message) -> None:
             result += f"заказ #{i_order.id} \t| {'выполнен' if i_order.released else 'в процессе'}\t| на {i_order.mark}\t| {'срочно' if i_order.immediately else 'не срочно'} {i_order.customer_username}\n"
             
         await message.answer(result)
+    
+    else:
+        await message.answer("message.chat.id")
         
         
 @logger.catch()
