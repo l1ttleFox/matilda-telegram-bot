@@ -136,6 +136,7 @@ async def confirm_order(callback: CallbackQuery, state: FSMContext) -> None:
 @logger.catch()
 @router.message(lambda m: m.chat.id == WORKERS_GROUP_ID and m.content_type and m.text == "/done")
 async def order_done(message: Message):
+    logger.info("handlers access in")
     if message.reply_to_message:
         if message.reply_to_message.message_id in session.query(Order.message_id).filter(Order.released is False).all():
             bot.unpin_chat_message(WORKERS_GROUP_ID, message.reply_to_message.message_id)
