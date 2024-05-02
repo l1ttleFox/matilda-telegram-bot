@@ -141,7 +141,8 @@ async def order_done(message: Message):
         logger.info("second level")
         logger.info(f"Message id: {message.reply_to_message.message_id}")
         logger.info(f"Order ids: {session.query(Order.message_id).all()}")
-        if message.reply_to_message.message_id in session.query(Order.message_id).filter(Order.released is False).all():
+        logger.info(f"Releases: {session.query(Order.released).all()}")
+        if message.reply_to_message.message_id in session.query(Order.message_id).filter(Order.released == False).all():
             logger.info("success")
             bot.unpin_chat_message(WORKERS_GROUP_ID, message.reply_to_message.message_id)
             order = session.query(Order).filter(Order.message_id == message.reply_to_message.message_id).one()
