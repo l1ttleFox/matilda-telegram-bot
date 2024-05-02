@@ -10,6 +10,6 @@ else:
     logger.info(".env bot token loaded.")
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-WORKERS_GROUP_ID = os.getenv("WORKERS_GROUP_ID")
+WORKERS_GROUP_ID = int(os.getenv("WORKERS_GROUP_ID"))
 TEST_PAYMENT_TOKEN = os.getenv("TEST_PAYMENT_TOKEN")
 PAYMENT_TOKEN = os.getenv("PAYMENT_TOKEN")

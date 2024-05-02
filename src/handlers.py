@@ -158,7 +158,7 @@ async def show_all_orders(message: Message) -> None:
         await message.answer(result)
     
     else:
-        await message.answer(f"{message.chat.id}")
+        await message.answer(f"WGI: {WORKERS_GROUP_ID}\nGI: {message.chat.id}")
         
         
 @logger.catch()
