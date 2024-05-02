@@ -140,6 +140,7 @@ async def order_done(message: Message):
         logger.info(f"Message id: {message.reply_to_message.message_id}")
         logger.info(f"Order ids: {session.query(Order.message_id).all()}")
         logger.info(f"Releases: {session.query(Order.released).first()}")
+        logger.info(f"Query: {session.query(Order.message_id).filter(Order.released.is_(False)).all()}")
         if message.reply_to_message.message_id in session.query(Order.message_id).filter(Order.released.is_(False)).all():
             logger.info("success")
             bot.unpin_chat_message(WORKERS_GROUP_ID, message.reply_to_message.message_id)
