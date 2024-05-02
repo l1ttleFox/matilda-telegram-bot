@@ -1,6 +1,6 @@
 import os
 import dotenv
-from loader import logger
+from loguru import logger
 
 if not dotenv.find_dotenv():
     logger.critical(".env file does not exists in root directory.")
