@@ -177,7 +177,7 @@ async def show_detail_order(message: Message):
             comment=order.comment,
             confirm_date=order.confirm_date,
             status="выполнен" if order.released else "в процессе",
-            released_date=order.release_date if order.released else ""
+            release_date=order.release_date if order.released else ""
         )
         await message.answer(result)
         
