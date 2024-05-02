@@ -4,5 +4,5 @@ services:
     build: .
     stop_signal: SIGKILL
     volumes:
-      - /app/logs:~/app/logs
-      - /app/db:~/app/db
+      - /app/logs:/root/app/logs
+      - /app/db:/root/app/db
