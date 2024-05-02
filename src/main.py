@@ -1,11 +1,10 @@
 import asyncio
-from loguru import logger
 
 from aiogram import Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from handlers import router
-from loader import bot
+from loader import bot, logger
 
 
 @logger.catch()

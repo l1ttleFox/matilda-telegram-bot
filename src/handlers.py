@@ -1,12 +1,11 @@
 import datetime
 
-from loguru import logger
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
-from loader import bot
+from loader import bot, logger
 import keyboard as kb
 import text
 from config import WORKERS_GROUP_ID
@@ -153,7 +152,7 @@ async def show_all_orders(message: Message) -> None:
     if message.chat.id == WORKERS_GROUP_ID:
         result = ""
         for i_order in session.query(Order).all():
-            result += f"заказ #{i_order.id} \t| {'выполнен' if i_order.released else 'в процессе'}\t| на {i_order.mark}\t| {'срочно' if i_order.immediately else 'не срочно'} {i_order.customer_username}\n"
+            result += f"заказ #{i_order.id} \t| {'выполнен' if i_order.released else 'в процессе'}\t| на {i_order.mark}\t| {'срочно' if i_order.immediately else 'не срочно'} \t| @{i_order.customer_username}\n"
             
         await message.answer(result)
     

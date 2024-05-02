@@ -60,7 +60,7 @@ order_confirmed = """
 show_detail_order = """
 Заказ #{id}
 ==================================
-Заказчик: {username}
+Заказчик: @{username}
 Тема заказа: {title}
 На оценку: {mark}
 Срочно: {immediately}

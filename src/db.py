@@ -2,7 +2,7 @@ import sqlalchemy
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Boolean
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-engine = create_engine("sqlite:///data.db")
+engine = create_engine("sqlite://app/db/data.db")
 Session = sessionmaker(bind=engine)
 session = Session()
 
