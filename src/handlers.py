@@ -1,6 +1,7 @@
 import datetime
 
 from aiogram import Router, F
+from aiogram.enums import ContentType
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -133,7 +134,7 @@ async def confirm_order(callback: CallbackQuery, state: FSMContext) -> None:
 
 
 @logger.catch()
-@router.message(lambda m: m.chat.id == WORKERS_GROUP_ID and m.text == "ГОТОВО")
+@router.message(lambda m: m.chat.id == WORKERS_GROUP_ID and m.content_type and m.text == "/done")
 async def order_done(message: Message):
     if message.reply_to_message:
         if message.reply_to_message.message_id in session.query(Order.message_id).filter(Order.released is False).all():
@@ -161,7 +162,7 @@ async def show_all_orders(message: Message) -> None:
         
         
 @logger.catch()
-@router.message(lambda m: m.chat.id == WORKERS_GROUP_ID and m.text.startswith("/order_"))
+@router.message(lambda m: m.chat.id == WORKERS_GROUP_ID and m.content_type == ContentType.TEXT and m.text.startswith("/order_"))
 async def show_detail_order(message: Message):
     try:
         order_id = int(message.text.split("_")[1])
