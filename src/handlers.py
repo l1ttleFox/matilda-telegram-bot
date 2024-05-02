@@ -155,7 +155,7 @@ async def show_all_orders(message: Message) -> None:
         
         
 @logger.catch()
-@router.message(lambda m: m.text.startswith("/order "))
+@router.message(lambda m: m.chat.id == WORKERS_GROUP_ID and m.text.startswith("/order "))
 async def show_detail_order(message: Message):
     try:
         order_id = int(message.text.split()[1])
