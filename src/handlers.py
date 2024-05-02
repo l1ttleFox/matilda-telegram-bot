@@ -101,7 +101,7 @@ async def confirm_order(callback: CallbackQuery, state: FSMContext) -> None:
         data["price"] = data["price"] * 1.4
     dt = datetime.datetime.now() + datetime.timedelta(hours=3)
     message = await bot.send_message(chat_id=WORKERS_GROUP_ID, text=text.new_order.format(
-        id=max(session.query(Order.id).all()) + 1,
+        id=max(*session.query(Order.id).all(), 0) + 1,
         rate="\n🚨🚨🚨СРОЧНО‼️" if data["rate"] == "immediately" else "",
         username=data["username"],
         title=data["title"],
