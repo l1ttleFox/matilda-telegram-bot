@@ -3,3 +3,6 @@ services:
   bot:
     build: .
     stop_signal: SIGKILL
+    volumes:
+      - /app/logs:/app/logs
+      - /app/db:/app/db
