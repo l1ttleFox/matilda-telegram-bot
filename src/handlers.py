@@ -99,9 +99,22 @@ async def confirm_order(callback: CallbackQuery, state: FSMContext) -> None:
     data["price"] = 800 if data["mark"] == "4" else 1200
     if data["rate"] == "immediately":
         data["price"] = data["price"] * 1.4
+        
+    order = Order(
+        customer_username=data["username"],
+        title=data["title"],
+        mark=int(data["mark"]),
+        immediately=True if data["rate"] == "immediately" else False,
+        price=int(data["price"]),
+        email=data["email"],
+        comment=data["comment"]
+    )
+    session.add(order)
+    session.commit()
+    
     dt = datetime.datetime.now() + datetime.timedelta(hours=3)
     message = await bot.send_message(chat_id=WORKERS_GROUP_ID, text=text.new_order.format(
-        id=max(*session.query(Order.id).all(), 0) + 1,
+        id=order.id,
         rate="\n🚨🚨🚨СРОЧНО‼️" if data["rate"] == "immediately" else "",
         username=data["username"],
         title=data["title"],
@@ -111,22 +124,13 @@ async def confirm_order(callback: CallbackQuery, state: FSMContext) -> None:
         time=dt.strftime("%d.%m.%Y %H:%M:%S"),
         comment=data["comment"],
     ))
+    
+    order.message_id = message.message_id
+    session.commit()
+    
     await bot.pin_chat_message(chat_id=WORKERS_GROUP_ID, message_id=message.message_id)
     await callback.message.edit_text(text.order_confirmed, reply_markup=None)
     await state.clear()
-    
-    order = Order(
-        customer_username=data["username"],
-        title=data["title"],
-        mark=int(data["mark"]),
-        immediately=True if data["rate"] == "immediately" else False,
-        price=int(data["price"]),
-        email=data["email"],
-        message_id=message.message_id,
-        comment=data["comment"]
-    )
-    session.add(order)
-    session.commit()
 
 
 @logger.catch()

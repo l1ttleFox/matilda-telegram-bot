@@ -20,7 +20,7 @@ class Order(Base):
     price = Column(Integer, nullable=False)
     email = Column(String(100), nullable=False)
     comment = Column(String(1000), nullable=True)
-    message_id = Column(Integer, nullable=False, unique=True)
+    message_id = Column(Integer, nullable=True, unique=True)
     confirm_date = Column(DateTime, default=sqlalchemy.func.now())
     released = Column(Boolean, default=False)
     release_date = Column(DateTime, nullable=True)
