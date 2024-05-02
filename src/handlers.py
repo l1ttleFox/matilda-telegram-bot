@@ -176,7 +176,7 @@ async def show_detail_order(message: Message):
             price=order.price,
             email=order.email,
             comment=order.comment,
-            confirma_date=order.confirm_date,
+            confirm_date=order.confirm_date,
             status="выполнен" if order.released else "в процессе",
             released_date=order.release_date if order.released else ""
         )
